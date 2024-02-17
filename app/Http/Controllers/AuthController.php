@@ -23,6 +23,10 @@ class AuthController extends Controller
         $this->userRepository = $userRepository;
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Foundation\Application|\Illuminate\Http\Response
+     */
     public function login(Request $request)
     {
         try {
@@ -54,6 +58,10 @@ class AuthController extends Controller
         return $this->userRepository->getAuthUser();
     }
 
+    /**
+     * @param CreateUserRequest $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Foundation\Application|\Illuminate\Http\Response
+     */
     public function register(CreateUserRequest $request)
     {
         try {

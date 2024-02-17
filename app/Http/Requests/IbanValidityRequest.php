@@ -42,6 +42,10 @@ class IbanValidityRequest extends FormRequest
         ];
     }
 
+    /**
+     * @param Validator $validator
+     * @return void
+     */
     public function failedValidation(Validator $validator)
     {
         throw new HttpResponseException($this->controller->errorJsonResponse($validator->errors()->first(), 422, $validator->errors()));
