@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\IbanValidityRequest;
 use App\Interfaces\CountryValueRepositoryInterface;
+use App\Interfaces\IbaNumberRepositoryInterface;
 
 class IbanValidityController extends Controller
 {
@@ -11,13 +12,19 @@ class IbanValidityController extends Controller
      * @var CountryValueRepositoryInterface
      */
     private CountryValueRepositoryInterface $countryValueRepository;
+    /**
+     * @var IbaNumberRepositoryInterface
+     */
+    private IbaNumberRepositoryInterface $ibaNumberRepository;
 
     /**
      * @param CountryValueRepositoryInterface $countryValueRepository
+     * @param IbaNumberRepositoryInterface $ibaNumberRepository
      */
-    public function __construct(CountryValueRepositoryInterface $countryValueRepository)
+    public function __construct(CountryValueRepositoryInterface $countryValueRepository, IbaNumberRepositoryInterface $ibaNumberRepository)
     {
         $this->countryValueRepository = $countryValueRepository;
+        $this->ibaNumberRepository = $ibaNumberRepository;
     }
 
     /**
@@ -55,7 +62,12 @@ class IbanValidityController extends Controller
             }
 
             if ($this->bcmod($converted, '97') == 1) {
-                return $this->successJsonResponse(true, 'Your entered IBA Number is valid', 200);
+                $ibanData = [
+                    'iba_number' => $request->get('iba_number'),
+                    'user_id' => $request->get('user_id')
+                ];
+                $data = $this->ibaNumberRepository->create($ibanData);
+                return $this->successJsonResponse($data, 'Your entered IBA Number is valid', 200);
             }
         }
 

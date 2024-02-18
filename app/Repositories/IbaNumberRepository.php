@@ -14,4 +14,13 @@ class IbaNumberRepository implements IbaNumberRepositoryInterface
     {
         return IbaNumber::with('user')->get();
     }
+
+    /**
+     * @param $data
+     * @return mixed
+     */
+    public function create($data)
+    {
+        return IbaNumber::create($data);
+    }
 }
