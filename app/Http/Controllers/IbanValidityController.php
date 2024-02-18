@@ -20,20 +20,24 @@ class IbanValidityController extends Controller
         $this->countryValueRepository = $countryValueRepository;
     }
 
+    /**
+     * @param IbanValidityRequest $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Foundation\Application|\Illuminate\Http\Response
+     */
     public function checkValidity(IbanValidityRequest $request)
     {
-        $iban = $request->get('iba_number');
+        $ibanNumber = $request->get('iba_number');
 
-        dd($this->countryValueRepository->getAll());
+        $countryValues = $this->countryValueRepository->getAll();
+        $ibanLengths = [];
+        foreach ($countryValues as $countryValue) {
+            $ibanLengths[$countryValue->country_code] = $countryValue->value;
+        }
 
-        $ibanLengths = [
-            'AL' => 28, 'AD' => 24, 'AT' => 20, 'AZ' => 28, 'BH' => 22,
-        ];
-
-        $iban = strtolower(preg_replace('/\s+/', '', $iban));
+        $iban = strtolower(preg_replace('/\s+/', '', $ibanNumber));
 
         if (strlen($iban) < 2) {
-            return false;
+            return $this->errorJsonResponse('Invalid IBA number', 422, false);
         }
 
         $countryCode = substr($iban, 0, 2);
@@ -50,11 +54,31 @@ class IbanValidityController extends Controller
                 }
             }
 
-            if (bcmod($converted, '97') == 1) {
-                return true;
+            if ($this->bcmod($converted, '97') == 1) {
+                return $this->successJsonResponse(true, 'Your entered IBA Number is valid', 200);
             }
         }
 
-        return false;
+        return $this->errorJsonResponse('Invalid IBA number', 422, false);
+    }
+
+    /**
+     * @param $x
+     * @param $y
+     * @return int
+     */
+    function bcmod($x, $y)
+    {
+        $take = 5;
+        $mod = '';
+
+        do {
+            $a = (int)$mod.substr($x, 0, $take);
+            $x = substr($x, $take);
+            $mod = $a % $y;
+        }
+        while (strlen($x));
+
+        return (int)$mod;
     }
 }
