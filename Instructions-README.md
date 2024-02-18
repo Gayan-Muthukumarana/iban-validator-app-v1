@@ -30,9 +30,14 @@ composer install
 
 * Copy the `.env.example` file to `.env`.
 * Configure your database connection in the `.env` file.
+* Update the admin details as required.
 * Generate an application key:
 ```bash
 php artisan key:generate
+```
+* Generate client IDs by running the Laravel passport. This will generate 2 client keys which you have to set as `CLIENT_1` & `CLIENT_2` in your `.env` file:
+```bash
+php artisan passport:install
 ```
 5. Migrate and seed the database:
 ```bash

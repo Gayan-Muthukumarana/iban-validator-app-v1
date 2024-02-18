@@ -50,4 +50,13 @@ class UserRepository implements UserRepositoryInterface
     {
         return User::where('email', $email)->exists();
     }
+
+    /**
+     * @param $email
+     * @return mixed
+     */
+    public function checkAdminUser($email)
+    {
+        return User::where('email', $email)->where('is_admin', true)->exists();
+    }
 }
